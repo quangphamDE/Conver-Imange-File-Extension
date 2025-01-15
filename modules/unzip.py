@@ -10,4 +10,5 @@ def un_zip(path_of_zip):
     for zip_file in zip_files:
         if zip_file.split(".")[1] == 'zip':
             with zipfile.ZipFile(os.path.join(path_of_zip, zip_file), 'r') as file:
-                file.extractall("./temp")
+                folder_name = zip_file.split(".")[0]
+                file.extractall(os.path.join("./temp", folder_name))

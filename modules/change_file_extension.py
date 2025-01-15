@@ -6,21 +6,38 @@ def convert(path_of_des, new_extension="jpg"):
     extensions_file_str = ".jpg, .jpeg, .png, .gif, .bmp, .tiff, .tif, .webp, .ico, .dds, .heif, .heic, .svg, .ai, .eps, .pdf, .raw, .cr2, .nef, .arw, .orf, .dng, .sr2, .psd, .xcf"
     extensions_file = [file.strip()[1:]
                        for file in extensions_file_str.split(",")]
-    if os.path.exists(path_of_des) == False:
+    if not os.path.exists(path_of_des):
         os.mkdir(path_of_des)
 
-    images = os.listdir("./temp")
-    for img in images:
-        if img.split(".")[1] in extensions_file:
-            try:
-                with Image.open(os.path.join("./temp", img)) as file:
-                    name = img.split('.')[0] + "." + new_extension
-                    file.save(os.path.join(path_of_des, name))
-                print(f"Converted into {name}")
-            except:
-                print(f"Error when converted into {name}")
-                pass
+    # Lấy danh sách các thư mục con trong thư mục temp
+    images_dir_tmp = os.listdir("./temp")
+    images_dir = [os.path.join("./temp", img_dir)
+                  for img_dir in images_dir_tmp]
 
-    for img in os.listdir("./temp"):
-        os.remove(os.path.join("./temp", img))
+    # Duyệt các thư mục con trong thư mục gốc
+    for dir in images_dir:
+        subfolder_name = os.path.basename(dir)
+        dest_subfolder = os.path.join(path_of_des, subfolder_name)
+        if not os.path.exists(dest_subfolder):
+            os.makedirs(dest_subfolder)
+        # Duyệt qua từng tệp trong mỗi thư mục con
+        for img in os.listdir(dir):
+            if img.split(".")[-1].lower() in extensions_file:
+                try:
+                    img_path = os.path.join(dir, img)
+                    with Image.open(img_path) as file:
+                        name = img.split('.')[0] + "." + new_extension
+                        file.save(os.path.join(dest_subfolder, name))
+                    print(f"Converted {img} into \
+                          {os.path.join(dest_subfolder, name)}")
+                except Exception as e:
+                    print(f"Error processing {img}: {e}")
+
+    # Xóa tất cả tệp trong thư mục temp và thư mục con
+    for dir in images_dir:
+        for img in os.listdir(dir):
+            os.remove(os.path.join(dir, img))
+        os.rmdir(dir)
+
+    # Xóa thư mục temp
     os.rmdir("./temp")
