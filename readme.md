@@ -1,7 +1,7 @@
 
 # Image File Extension Convert 
 
-This repository is a simple image file extension cenverted tool 
+This repository is a simple tool for converting image file extensions
 
 
 ## Run Locally
